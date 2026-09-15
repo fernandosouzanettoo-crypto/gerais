@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useTilt } from "@/hooks/useTilt";
 
 const DETAILS = [
   { id: "vedacao", label: "Vedação em silicone", image: "/images/tempbox/detail_vedacao.png", info: "Vedação em silicone garante fechamento firme entre os compartimentos e a tampa." },
@@ -11,6 +12,65 @@ const DETAILS = [
   { id: "usb", label: "Entrada USB-C", image: "/images/tempbox/14_usb_c-v2.png", info: "Alimenta o sistema térmico da GO e da PRO." },
   { id: "base", label: "Base antiderrapante", image: "/images/tempbox/15_bottom_view-v2.png", info: "Estrutura estável, pensada para transporte no dia a dia." },
 ];
+
+function DetailCard({
+  detail,
+  index,
+  isActive,
+  onToggle,
+}: {
+  detail: (typeof DETAILS)[number];
+  index: number;
+  isActive: boolean;
+  onToggle: () => void;
+}) {
+  const { ref, onPointerMove, onPointerLeave } = useTilt<HTMLDivElement>();
+
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+      onClick={onToggle}
+      className="group perspective-1200 text-left"
+    >
+      <div
+        ref={ref}
+        onPointerMove={onPointerMove}
+        onPointerLeave={onPointerLeave}
+        style={{
+          transform: "rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateZ(0)",
+        }}
+        className="tilt-glow preserve-3d relative aspect-square overflow-hidden rounded-2xl border border-line bg-surface will-change-transform"
+      >
+        <Image
+          src={detail.image}
+          alt={detail.label}
+          fill
+          sizes="(max-width: 640px) 45vw, 200px"
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <span
+          className={`absolute right-2 top-2 z-[2] h-3 w-3 rounded-full border transition-colors ${
+            isActive ? "border-hot bg-hot" : "border-white/60 bg-white/10"
+          }`}
+        />
+      </div>
+      <p className="mt-3 text-sm font-semibold">{detail.label}</p>
+      {isActive && (
+        <motion.p
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ duration: 0.3 }}
+          className="mt-1 text-xs text-muted"
+        >
+          {detail.info}
+        </motion.p>
+      )}
+    </motion.button>
+  );
+}
 
 export default function ProductDetails() {
   const [active, setActive] = useState<string | null>(null);
@@ -30,41 +90,13 @@ export default function ProductDetails() {
 
         <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {DETAILS.map((d, i) => (
-            <motion.button
+            <DetailCard
               key={d.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              onClick={() => setActive(active === d.id ? null : d.id)}
-              className="group text-left"
-            >
-              <div className="relative aspect-square overflow-hidden rounded-2xl border border-line bg-surface">
-                <Image
-                  src={d.image}
-                  alt={d.label}
-                  fill
-                  sizes="(max-width: 640px) 45vw, 200px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <span
-                  className={`absolute right-2 top-2 h-3 w-3 rounded-full border transition-colors ${
-                    active === d.id ? "border-hot bg-hot" : "border-white/60 bg-white/10"
-                  }`}
-                />
-              </div>
-              <p className="mt-3 text-sm font-semibold">{d.label}</p>
-              {active === d.id && (
-                <motion.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-1 text-xs text-muted"
-                >
-                  {d.info}
-                </motion.p>
-              )}
-            </motion.button>
+              detail={d}
+              index={i}
+              isActive={active === d.id}
+              onToggle={() => setActive(active === d.id ? null : d.id)}
+            />
           ))}
         </div>
       </div>
