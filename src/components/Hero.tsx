@@ -24,8 +24,13 @@ export default function Hero() {
   const heroTextOpacity = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
   const heroTextY = useTransform(scrollYProgress, [0, 0.2], [0, -60]);
 
-  const labelsOpacity = useTransform(scrollYProgress, [0.5, 0.7], [0, 1]);
+  const labelsOpacity = useTransform(scrollYProgress, [0.55, 0.72], [0, 1]);
   const vignette = useTransform(scrollYProgress, [0, 1], [0.15, 0.5]);
+
+  // brief scroll-storytelling, one phrase at a time
+  const story0 = useTransform(scrollYProgress, [0.2, 0.28, 0.4, 0.48], [0, 1, 1, 0]);
+  const story1 = useTransform(scrollYProgress, [0.46, 0.54, 0.64, 0.72], [0, 1, 1, 0]);
+  const story2 = useTransform(scrollYProgress, [0.7, 0.8, 1], [0, 1, 1]);
 
   return (
     <section id="top" ref={containerRef} className="relative h-[260vh] bg-background">
@@ -147,6 +152,19 @@ export default function Hero() {
             </button>
           </motion.div>
         </motion.div>
+
+        {/* brief story line as the box opens */}
+        <div className="absolute inset-x-0 bottom-[26%] h-8 px-5 text-center sm:bottom-[30%]">
+          <motion.p style={{ opacity: story0 }} className="absolute inset-x-0 font-display text-lg font-semibold sm:text-2xl">
+            DUAS TEMPERATURAS.
+          </motion.p>
+          <motion.p style={{ opacity: story1 }} className="absolute inset-x-0 font-display text-lg font-semibold sm:text-2xl">
+            UM PRODUTO.
+          </motion.p>
+          <motion.p style={{ opacity: story2 }} className="absolute inset-x-0 font-display text-lg font-semibold sm:text-2xl">
+            CRIADO PARA A SUA ROTINA.
+          </motion.p>
+        </div>
 
         {/* labels that appear once the box opens on scroll */}
         <motion.div
