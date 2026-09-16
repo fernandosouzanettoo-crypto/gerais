@@ -105,6 +105,33 @@ body {
   scrollbar-width: none;
 }
 
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.tilt-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    360px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    rgba(255, 255, 255, 0.08),
+    transparent 60%
+  );
+  transition: opacity 0.3s ease;
+}
+
+.tilt-glow:hover::before {
+  opacity: 1;
+}
+
 @keyframes heat-rise {
   0% {
     transform: translateY(0) scaleY(1);
